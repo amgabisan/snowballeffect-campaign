@@ -82,13 +82,44 @@ class ApiController extends Controller
 
             // Get Subscriber History
             $subscriberHistory = $this->callSubscriberApi($subscriber->ListID, 'get_history', $emailAddress);
+
+            $summary = [];
+            $summary['sent'] = count($subscriberHistory->response); // Number of Campaigns
+            $summary['click']['count'] = 0; // Click Any link in the Campaign
+            $summary['open']['count'] = 0; // Open the email
+
+            foreach ($subscriberHistory->response as $campaign) {
+                $openFlag = false;
+                $clickFlag = false;
+                if (count($campaign->Actions) != 0) {
+                    foreach ($campaign->Actions as $action) {
+                        if ($action->Event == 'Open' && !$openFlag) { // if event is open and open flag is set to false
+                            $summary['open']['count']++;
+                            $openFlag = true;
+                        }
+
+                        if ($action->Event == 'Click' && !$clickFlag) {
+                            $summary['click']['count']++;
+                            $clickFlag = true;
+                        }
+
+                        if ($openFlag && $clickFlag) {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            $summary['open']['percentage'] = $summary['open']['count'] / $summary['sent'] * 100;
+            $summary['click']['percentage'] = $summary['click']['count'] / $summary['sent'] * 100;
+
         } else {
-            $searchedSubscriber = $subscriberHistory = null;
+            $searchedSubscriber = $subscriberHistory = $summary = null;
             // Subscriber not found.
         }
 
         //dd($clientDetails, $subscriber, $searchedSubscriber, $subscriberHistory);
-        return view('api.index', compact('searchedSubscriber', 'subscriberHistory', 'snowballEffect'));
+        return view('api.index', compact('searchedSubscriber', 'subscriberHistory', 'snowballEffect', 'summary'));
     }
 
     private function setAuth($accessToken, $refreshToken, $expiresIn)

@@ -57,6 +57,20 @@
         </table>
         <br /> <br />
 
+        <h3>Summary of Activities</h3>
+        <div class="d-flex justify-content-around">
+            <div>
+                <h4>{{ $summary['sent'] }} Campaigns </h4>
+            </div>
+            <div>
+               <h4>{{ $summary['open']['count'] }} Opened Campaigns </h4>
+            </div>
+            <div>
+                <h4>{{ $summary['click']['count'] }} Clicked Campaigns </h4>
+            </div>
+        </div>
+        <br /> <br /> <br />
+
         <h3>Subscriber's Timeline</h3>
 
         @foreach ($subscriberHistory->response as $value)
