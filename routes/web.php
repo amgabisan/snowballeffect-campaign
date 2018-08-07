@@ -11,6 +11,11 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+//Route::get('/', function () {
+//    return view('welcome');
+//});
+
+Route::get('/', 'ApiController@index');
+Route::get('/success', 'ApiController@success');
+Route::get('/dashboard', 'ApiController@dashboard');
+Route::post('/dashboard', 'ApiController@details');
